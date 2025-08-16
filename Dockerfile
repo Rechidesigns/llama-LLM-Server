@@ -1,25 +1,24 @@
 FROM python:3.11-slim
 
-WORKDIR /app
-
-# Install system dependencies
+# Install dependencies
 RUN apt-get update && apt-get install -y curl unzip netcat-openbsd && rm -rf /var/lib/apt/lists/*
 
 # Install Ollama
-RUN curl -sSL https://ollama.com/install.sh | bash
+RUN curl -fsSL https://ollama.com/download/ollama-linux-amd64.tgz -o ollama.tgz \
+    && tar -xzf ollama.tgz -C /usr/local/bin \
+    && rm ollama.tgz
 
-# Copy requirements and install Python dependencies
+# Install Python dependencies
+WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# Copy app
 COPY . .
 
-# Make sure start.sh is executable
-RUN chmod +x start.sh
+# Make start script executable
+RUN chmod +x /app/start.sh
 
-# Expose ports
 EXPOSE 8000 11434
 
-# Start the app
-CMD ["./start.sh"]
+CMD ["/app/start.sh"]
