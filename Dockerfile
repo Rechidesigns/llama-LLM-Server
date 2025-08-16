@@ -13,18 +13,16 @@ RUN apt-get update && apt-get install -y \
 # Install Ollama CLI
 RUN curl -sSL https://ollama.com/install.sh | bash
 
-# Copy Python requirements
+# Copy requirements and install Python deps
 COPY requirements.txt .
-
-# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the FastAPI app
+# Copy app code
 COPY . .
 
-# Expose both FastAPI and Ollama ports
+# Expose ports
 EXPOSE 8000 11434
 
-# Start Ollama server in the background, then start FastAPI
+# Start Ollama server in the background, then FastAPI
 CMD ollama run llama3 --port 11434 & \
     uvicorn app:app --host 0.0.0.0 --port 8000
