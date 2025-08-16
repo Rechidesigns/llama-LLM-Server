@@ -15,8 +15,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy code
 COPY . .
 
-# Expose both ports
+# Expose ports
 EXPOSE 8000 11434
 
-# Start Ollama in the background, then FastAPI
-CMD ollama run llama3 --port 11434 & uvicorn app:app --host 0.0.0.0 --port 8000
+# Start Ollama in background, then FastAPI
+CMD sh -c "ollama run llama3 & uvicorn app:app --host 0.0.0.0 --port 8000"
