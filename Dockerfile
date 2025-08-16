@@ -2,22 +2,29 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies (optional, psycopg if needed)
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     gcc \
+    curl \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy and install Python dependencies
+# Install Ollama CLI
+RUN curl -sSL https://ollama.com/install.sh | bash
+
+# Copy Python requirements
 COPY requirements.txt .
-RUN pip install --upgrade pip
+
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy app code
+# Copy the FastAPI app
 COPY . .
 
-# Set environment variable for Ollama (optional, can also be in .env)
-ENV OLLAMA_URL=http://host.docker.internal:11434
+# Expose both FastAPI and Ollama ports
+EXPOSE 8000 11434
 
-# Run the FastAPI app
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+# Start Ollama server in the background, then start FastAPI
+CMD ollama run llama3 --port 11434 & \
+    uvicorn app:app --host 0.0.0.0 --port 8000
