@@ -3,7 +3,7 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y curl unzip netcat && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y curl unzip netcat-openbsd && rm -rf /var/lib/apt/lists/*
 
 # Install Ollama
 RUN curl -sSL https://ollama.com/install.sh | bash
